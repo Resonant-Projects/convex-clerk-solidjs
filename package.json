@@ -1,0 +1,66 @@
+{
+  "name": "convex-clerk-solidjs",
+  "version": "0.1.0",
+  "description": "Clerk authentication integration for Convex in SolidJS applications",
+  "type": "module",
+  "main": "./dist/index/index.js",
+  "module": "./dist/index/index.js",
+  "types": "./dist/index/index.d.ts",
+  "exports": {
+    ".": {
+      "solid": "./dist/index/index.jsx",
+      "import": "./dist/index/index.js",
+      "types": "./dist/index/index.d.ts"
+    },
+    "./guards": {
+      "import": "./dist/guards/index.js",
+      "types": "./dist/guards/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
+  },
+  "keywords": [
+    "solidjs",
+    "solid",
+    "convex",
+    "clerk",
+    "auth",
+    "authentication",
+    "reactive"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keithce/convex-clerk-solidjs"
+  },
+  "peerDependencies": {
+    "solid-js": ">=1.6.0",
+    "convex": ">=1.25.0",
+    "clerk-solidjs": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@solidjs/router": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@solidjs/router": "^0.15.4",
+    "@solidjs/testing-library": "^0.8.10",
+    "@types/bun": "latest",
+    "clerk-solidjs": "^2.0.10",
+    "convex": "^1.31.7",
+    "solid-js": "^1.9.11",
+    "tsup": "^8.5.1",
+    "tsup-preset-solid": "^2.2.0",
+    "typescript": "^5.9.3"
+  }
+}
