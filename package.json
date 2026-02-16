@@ -1,6 +1,6 @@
 {
   "name": "convex-clerk-solidjs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Clerk authentication integration for Convex in SolidJS applications",
   "type": "module",
   "main": "./dist/index/index.js",
@@ -40,7 +40,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/keithce/convex-clerk-solidjs"
+    "url": "git+https://github.com/Resonant-Projects/convex-clerk-solidjs.git"
   },
   "peerDependencies": {
     "solid-js": ">=1.6.0",
