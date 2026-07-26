@@ -24,7 +24,7 @@
   ],
   "scripts": {
     "build": "tsup",
-    "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit",
+    "typecheck": "bun node_modules/@typescript/native/bin/tsc --noEmit",
     "test": "bun test",
     "prepublishOnly": "bun run build"
   },
