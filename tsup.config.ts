@@ -24,6 +24,12 @@ export default defineConfig(config => {
 
   return tsupOptions.map(d => ({
     ...d,
+    // The dts step runs on the TypeScript 6 pocket (see package.json) and
+    // tsup injects `baseUrl`, which TS 6 flags as deprecated; silence only
+    // that deprecation, scoped to the dts build.
+    dts: d.dts
+      ? { compilerOptions: { ignoreDeprecations: '6.0' } }
+      : undefined,
     external: [
       ...(Array.isArray(d.external) ? d.external : []),
       'solid-js',
