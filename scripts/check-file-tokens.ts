@@ -142,9 +142,13 @@ function stagedFiles(): { path: string; binary: boolean; mode: string; objectId:
     if (stage === "0") index.set(entry.slice(tab + 1), { mode: mode!, objectId: objectId! });
   }
   // --numstat prints "-\t-\tpath" for files git treats as binary.
+  // Attribute lookup must use the candidate tree too: an unstaged binary rule
+  // must not exempt staged text, nor may unstaged text rules reject binaries.
+  const stagedTree = git(["write-tree"]).toString().trim();
   // --no-renames keeps the -z output a flat (added, deleted, path) triple;
   // a rename then shows up as an Add, which --diff-filter=ACM still includes.
   const out = git([
+    `--attr-source=${stagedTree}`,
     "diff", "--cached", "--numstat", "--no-renames", "--diff-filter=ACMR", "-z",
   ]);
   const files: { path: string; binary: boolean; mode: string; objectId: string }[] = [];
