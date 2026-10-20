@@ -122,7 +122,7 @@ function isIgnored(path: string): boolean {
 }
 
 function git(args: string[]): Buffer {
-  const result = Bun.spawnSync(["git", ...args]);
+  const result = Bun.spawnSync(["git", ...args], { stdin: "ignore" });
   if (result.exitCode !== 0) {
     process.stderr.write(result.stderr);
     throw new Error(`git ${args.join(" ")} failed with status ${result.exitCode}`);
@@ -132,6 +132,12 @@ function git(args: string[]): Buffer {
 
 /** Staged files (Added, Copied, Modified, Renamed) with their binary status. */
 function stagedFiles(): { path: string; binary: boolean; mode: string; objectId: string }[] {
+  // Select only changed index entries. Disabling rename detection represents
+  // renames as additions, which are still included by the required ACMR filter.
+  const changed = git([
+    "diff", "--cached", "--name-only", "--no-renames", "--diff-filter=ACMR", "-z",
+  ]).toString("latin1").split("\0").filter(Boolean);
+  if (changed.length === 0) return [];
   // Latin-1 is a lossless byte-to-string mapping for joining Git records. Only
   // decode paths as UTF-8 for display/globs; use index object IDs for lookups.
   const index = new Map<string, { mode: string; objectId: string }>();
@@ -141,17 +147,17 @@ function stagedFiles(): { path: string; binary: boolean; mode: string; objectId:
     const [mode, objectId, stage] = entry.slice(0, tab).split(" ");
     if (stage === "0") index.set(entry.slice(tab + 1), { mode: mode!, objectId: objectId! });
   }
-  // --numstat prints "-\t-\tpath" for files git treats as binary.
-  // Attribute lookup must use the candidate tree too: an unstaged binary rule
-  // must not exempt staged text, nor may unstaged text rules reject binaries.
+  // Classify the candidate blobs against an empty tree: comparing with HEAD
+  // marks binary-to-text replacements as binary because the OLD blob is binary.
+  // Staged attributes also prevent unstaged rules from changing classification.
+  // This metadata is only used for the changed paths selected above.
   const stagedTree = git(["write-tree"]).toString().trim();
-  // --no-renames keeps the -z output a flat (added, deleted, path) triple;
-  // a rename then shows up as an Add, which --diff-filter=ACM still includes.
+  const emptyTree = git(["mktree"]).toString().trim();
   const out = git([
     `--attr-source=${stagedTree}`,
-    "diff", "--cached", "--numstat", "--no-renames", "--diff-filter=ACMR", "-z",
+    "diff", "--numstat", "--no-renames", "-z", emptyTree, stagedTree,
   ]);
-  const files: { path: string; binary: boolean; mode: string; objectId: string }[] = [];
+  const binaries = new Set<string>();
   for (const entry of out.toString("latin1").split("\0")) {
     if (!entry) continue;
     // Split on the first two tabs only: with -z, git keeps literal tabs in
@@ -161,12 +167,14 @@ function stagedFiles(): { path: string; binary: boolean; mode: string; objectId:
     if (firstTab === -1 || secondTab === -1) continue;
     const added = entry.slice(0, firstTab);
     const deleted = entry.slice(firstTab + 1, secondTab);
-    const rawPath = entry.slice(secondTab + 1);
-    if (!rawPath) continue;
+    if (added === "-" && deleted === "-") binaries.add(entry.slice(secondTab + 1));
+  }
+  const files: { path: string; binary: boolean; mode: string; objectId: string }[] = [];
+  for (const rawPath of changed) {
     const staged = index.get(rawPath);
     if (!staged) throw new Error("Staged file is missing from index stage 0");
     const path = Buffer.from(rawPath, "latin1").toString("utf8");
-    files.push({ path, binary: added === "-" && deleted === "-", ...staged });
+    files.push({ path, binary: binaries.has(rawPath), ...staged });
   }
   return files;
 }
