@@ -26,7 +26,9 @@
     "build": "tsup",
     "typecheck": "bun node_modules/@typescript/native/bin/tsc --noEmit",
     "test": "bun test",
-    "prepublishOnly": "bun run build"
+    "prepublishOnly": "bun run build",
+    "check:file-tokens": "bun scripts/check-file-tokens.ts",
+    "prepare": "bun scripts/install-git-hooks.ts"
   },
   "keywords": [
     "solidjs",
@@ -59,9 +61,14 @@
     "@typescript/native": "npm:typescript@^7.0.2",
     "clerk-solidjs": "^2.0.10",
     "convex": "^1.31.7",
+    "simple-git-hooks": "^2.14.0",
     "solid-js": "^1.9.11",
     "tsup": "^8.5.1",
     "tsup-preset-solid": "^2.2.0",
     "typescript": "^6.0.2"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "if [ -f scripts/check-file-tokens.ts ]; then bun scripts/check-file-tokens.ts; fi",
+    "preserveUnused": true
   }
 }

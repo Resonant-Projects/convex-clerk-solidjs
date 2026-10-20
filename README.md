@@ -513,6 +513,20 @@ function PostSignIn() {
 | `FeatureChecker` | `(requiredFeatures: string[]) => FeatureCheckResult` |
 | `FeatureCheckResult` | `{ isLoading: boolean; hasAccess: boolean; reason?: string }` |
 
+## Contributing
+
+### File size limit (pre-commit hook)
+
+A pre-commit hook blocks committing any file over **5,000 estimated tokens** (tokens ≈ bytes / 4, so **20,000 bytes**). Large files are expensive for humans and AI agents to read and edit; split them by responsibility instead (types, constants, helpers, and sub-functions into their own modules, re-exported from an index if needed).
+
+- The hook is installed automatically by `bun install` (via the `prepare` script and [simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)). To (re)install manually: `bunx simple-git-hooks`.
+- Setup skips production installs without the hook manager, directories without Git, and packages nested in another repository. Hook installation errors otherwise fail the install; set `SKIP_INSTALL_SIMPLE_GIT_HOOKS=1` to explicitly skip setup.
+- Setup preserves unrelated hooks. The shared hook skips branches or worktrees without the checker; submodule entries are skipped because they reference commits rather than file blobs.
+- Run the check by hand: `bun run check:file-tokens` (checks staged files only).
+- Binary classification uses staged blobs and staged `.gitattributes`, so previous binary content and unstaged attribute edits do not exempt staged text. This requires Git with `--attr-source` support.
+- Lockfiles, generated code, binaries, minified files, and snapshots are ignored. The list lives in `IGNORE_PATTERNS` in `scripts/check-file-tokens.ts`; add a pattern there if a file is genuinely generated.
+- Emergency bypass: `git commit --no-verify`.
+
 ## Credits
 
 This library builds on the work of several community projects:
