@@ -68,6 +68,7 @@
     "typescript": "^6.0.2"
   },
   "simple-git-hooks": {
-    "pre-commit": "bun scripts/check-file-tokens.ts"
+    "pre-commit": "if [ -f scripts/check-file-tokens.ts ]; then bun scripts/check-file-tokens.ts; fi",
+    "preserveUnused": true
   }
 }

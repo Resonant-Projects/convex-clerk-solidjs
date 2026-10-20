@@ -4,7 +4,7 @@
  *
  * Tokens are estimated as bytes / 4, so the limit is MAX_TOKENS * 4 bytes.
  * Only STAGED files are checked, and the size measured is the staged blob
- * (`git cat-file -s :path`), not the working-tree file.
+ * (`git cat-file -s` on the index object ID), not the working-tree file.
  *
  * Dependency-free: runs with `bun scripts/check-file-tokens.ts`.
  * Wired up as a pre-commit hook via simple-git-hooks (see package.json).
@@ -121,25 +121,34 @@ function isIgnored(path: string): boolean {
   return IGNORE_REGEXPS.some((re) => re.test(path));
 }
 
-function git(args: string[]): string {
+function git(args: string[]): Buffer {
   const result = Bun.spawnSync(["git", ...args]);
   if (result.exitCode !== 0) {
     process.stderr.write(result.stderr);
     throw new Error(`git ${args.join(" ")} failed with status ${result.exitCode}`);
   }
-  return result.stdout.toString();
+  return result.stdout;
 }
 
 /** Staged files (Added, Copied, Modified, Renamed) with their binary status. */
-function stagedFiles(): { path: string; binary: boolean }[] {
+function stagedFiles(): { path: string; binary: boolean; mode: string; objectId: string }[] {
+  // Latin-1 is a lossless byte-to-string mapping for joining Git records. Only
+  // decode paths as UTF-8 for display/globs; use index object IDs for lookups.
+  const index = new Map<string, { mode: string; objectId: string }>();
+  for (const entry of git(["ls-files", "--stage", "-z"]).toString("latin1").split("\0")) {
+    if (!entry) continue;
+    const tab = entry.indexOf("\t");
+    const [mode, objectId, stage] = entry.slice(0, tab).split(" ");
+    if (stage === "0") index.set(entry.slice(tab + 1), { mode: mode!, objectId: objectId! });
+  }
   // --numstat prints "-\t-\tpath" for files git treats as binary.
   // --no-renames keeps the -z output a flat (added, deleted, path) triple;
   // a rename then shows up as an Add, which --diff-filter=ACM still includes.
   const out = git([
     "diff", "--cached", "--numstat", "--no-renames", "--diff-filter=ACMR", "-z",
   ]);
-  const files: { path: string; binary: boolean }[] = [];
-  for (const entry of out.split("\0")) {
+  const files: { path: string; binary: boolean; mode: string; objectId: string }[] = [];
+  for (const entry of out.toString("latin1").split("\0")) {
     if (!entry) continue;
     // Split on the first two tabs only: with -z, git keeps literal tabs in
     // filenames, so the path is everything after the second tab.
@@ -148,17 +157,20 @@ function stagedFiles(): { path: string; binary: boolean }[] {
     if (firstTab === -1 || secondTab === -1) continue;
     const added = entry.slice(0, firstTab);
     const deleted = entry.slice(firstTab + 1, secondTab);
-    const path = entry.slice(secondTab + 1);
-    if (!path) continue;
-    files.push({ path, binary: added === "-" && deleted === "-" });
+    const rawPath = entry.slice(secondTab + 1);
+    if (!rawPath) continue;
+    const staged = index.get(rawPath);
+    if (!staged) throw new Error("Staged file is missing from index stage 0");
+    const path = Buffer.from(rawPath, "latin1").toString("utf8");
+    files.push({ path, binary: added === "-" && deleted === "-", ...staged });
   }
   return files;
 }
 
-/** Size in bytes of the STAGED blob for `path` (not the working-tree file).
- *  `:0:` pins index stage 0 so a filename like `0:notes.ts` is not misread. */
-function stagedBlobSize(path: string): number {
-  return Number.parseInt(git(["cat-file", "-s", `:0:${path}`]).trim(), 10);
+/** Size of the staged blob, using its stage-0 object ID so arbitrary filename
+ *  bytes and names like `0:notes.ts` never become Git revision arguments. */
+function stagedBlobSize(objectId: string): number {
+  return Number.parseInt(git(["cat-file", "-s", objectId]).toString().trim(), 10);
 }
 
 function estimateTokens(bytes: number): number {
@@ -168,9 +180,10 @@ function estimateTokens(bytes: number): number {
 function main(): number {
   const offenders: { path: string; bytes: number; tokens: number }[] = [];
 
-  for (const { path, binary } of stagedFiles()) {
-    if (binary || isIgnored(path)) continue;
-    const bytes = stagedBlobSize(path);
+  for (const { path, binary, mode, objectId } of stagedFiles()) {
+    // Gitlinks reference submodule commits, not authored file blobs.
+    if (mode === "160000" || binary || isIgnored(path)) continue;
+    const bytes = stagedBlobSize(objectId);
     if (bytes > MAX_BYTES) {
       offenders.push({ path, bytes, tokens: estimateTokens(bytes) });
     }
