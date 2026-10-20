@@ -513,6 +513,17 @@ function PostSignIn() {
 | `FeatureChecker` | `(requiredFeatures: string[]) => FeatureCheckResult` |
 | `FeatureCheckResult` | `{ isLoading: boolean; hasAccess: boolean; reason?: string }` |
 
+## Contributing
+
+### File size limit (pre-commit hook)
+
+A pre-commit hook blocks committing any file over **5,000 estimated tokens** (tokens ≈ bytes / 4, so **20,000 bytes**). Large files are expensive for humans and AI agents to read and edit; split them by responsibility instead (types, constants, helpers, and sub-functions into their own modules, re-exported from an index if needed).
+
+- The hook is installed automatically by `bun install` (via the `prepare` script and [simple-git-hooks](https://github.com/toplenboren/simple-git-hooks)). To (re)install manually: `bunx simple-git-hooks`.
+- Run the check by hand: `bun run check:file-tokens` (checks staged files only).
+- Lockfiles, generated code, binaries, minified files, and snapshots are ignored. The list lives in `IGNORE_PATTERNS` in `scripts/check-file-tokens.ts`; add a pattern there if a file is genuinely generated.
+- Emergency bypass: `git commit --no-verify`.
+
 ## Credits
 
 This library builds on the work of several community projects:
