@@ -12,8 +12,6 @@
  * Exit codes: 0 = ok, 1 = at least one staged file is over the limit.
  */
 
-import { spawnSync } from "node:child_process";
-
 const MAX_TOKENS = 5_000;
 const BYTES_PER_TOKEN = 4;
 const MAX_BYTES = MAX_TOKENS * BYTES_PER_TOKEN; // 20,000 bytes
@@ -124,12 +122,12 @@ function isIgnored(path: string): boolean {
 }
 
 function git(args: string[]): string {
-  const result = spawnSync("git", args, { encoding: "utf8" });
-  if (result.status !== 0) {
-    process.stderr.write(result.stderr ?? "");
-    throw new Error(`git ${args.join(" ")} failed with status ${result.status}`);
+  const result = Bun.spawnSync(["git", ...args]);
+  if (result.exitCode !== 0) {
+    process.stderr.write(result.stderr);
+    throw new Error(`git ${args.join(" ")} failed with status ${result.exitCode}`);
   }
-  return result.stdout;
+  return result.stdout.toString();
 }
 
 /** Staged files (Added, Copied, Modified, Renamed) with their binary status. */

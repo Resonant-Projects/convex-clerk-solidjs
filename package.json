@@ -28,7 +28,7 @@
     "test": "bun test",
     "prepublishOnly": "bun run build",
     "check:file-tokens": "bun scripts/check-file-tokens.ts",
-    "prepare": "simple-git-hooks || true"
+    "prepare": "bun scripts/install-git-hooks.ts"
   },
   "keywords": [
     "solidjs",
