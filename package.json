@@ -5,16 +5,16 @@
   "type": "module",
   "main": "./dist/index/index.js",
   "module": "./dist/index/index.js",
-  "types": "./dist/index/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "solid": "./dist/index/index.jsx",
-      "import": "./dist/index/index.js",
-      "types": "./dist/index/index.d.ts"
+      "import": "./dist/index/index.js"
     },
     "./guards": {
-      "import": "./dist/guards/index.js",
-      "types": "./dist/guards/index.d.ts"
+      "types": "./dist/types/guards/index.d.ts",
+      "import": "./dist/guards/index.js"
     }
   },
   "files": [
@@ -23,9 +23,13 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup",
-    "typecheck": "bun node_modules/@typescript/native/bin/tsc --noEmit",
-    "test": "bun test",
+    "build": "tsup && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test --conditions browser",
+    "lint": "biome lint --error-on-warnings .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "bun run lint && bun run format:check && bun run typecheck && bun run test && bun run build",
     "prepublishOnly": "bun run build",
     "check:file-tokens": "bun scripts/check-file-tokens.ts",
     "prepare": "bun scripts/install-git-hooks.ts"
@@ -40,14 +44,16 @@
     "reactive"
   ],
   "license": "MIT",
+  "packageManager": "bun@1.4.4",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Resonant-Projects/convex-clerk-solidjs.git"
   },
   "peerDependencies": {
-    "solid-js": ">=1.6.0",
+    "solid-js": "^1.9.8",
     "convex": ">=1.25.0",
-    "clerk-solidjs": ">=2.0.0"
+    "@resonant-projects/clerk-solidjs": "^4.3.6",
+    "@solidjs/router": ">=0.16 <2"
   },
   "peerDependenciesMeta": {
     "@solidjs/router": {
@@ -55,17 +61,20 @@
     }
   },
   "devDependencies": {
-    "@solidjs/router": "^0.15.4",
+    "@babel/core": "^7.29.13",
+    "@babel/preset-typescript": "^7.29.7",
+    "@biomejs/biome": "^2.6.6",
+    "@resonant-projects/clerk-solidjs": "^4.3.6",
+    "@solidjs/router": "^1.0.1",
     "@solidjs/testing-library": "^0.8.10",
-    "@types/bun": "latest",
-    "@typescript/native": "npm:typescript@^7.0.2",
-    "clerk-solidjs": "^2.0.10",
-    "convex": "^1.31.7",
+    "@types/bun": "^1.4.4",
+    "babel-preset-solid": "^1.9.16",
+    "convex": "^1.49.0",
     "simple-git-hooks": "^2.14.0",
-    "solid-js": "^1.9.11",
-    "tsup": "^8.5.1",
+    "solid-js": "^1.9.18",
+    "tsup": "^9.0.0",
     "tsup-preset-solid": "^2.2.0",
-    "typescript": "^6.0.2"
+    "typescript": "^7.0.2"
   },
   "simple-git-hooks": {
     "pre-commit": "if [ -f scripts/check-file-tokens.ts ]; then bun scripts/check-file-tokens.ts; fi",

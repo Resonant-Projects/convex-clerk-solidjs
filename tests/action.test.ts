@@ -11,7 +11,9 @@ describe('createAction', () => {
   test('createAction throws outside provider', () => {
     createRoot(dispose => {
       const { createAction } = require('../src/action');
-      const mockRef = { _type: 'action' } as unknown as FunctionReference<'action'>;
+      const mockRef = {
+        _type: 'action',
+      } as unknown as FunctionReference<'action'>;
 
       expect(() => createAction(mockRef)).toThrow();
       dispose();

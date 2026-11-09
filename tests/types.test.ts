@@ -1,5 +1,11 @@
 import { test, expect, describe } from 'bun:test';
-import { createMockConvexClient, createMockClerkAuth } from './helpers';
+import type { useAuth } from '@resonant-projects/clerk-solidjs';
+import type { UseClerkAuth } from '../src/types.js';
+import { createMockConvexClient, createMockClerkAuth } from './helpers.js';
+
+type ClerkUseAuthIsCompatible = typeof useAuth extends UseClerkAuth
+  ? true
+  : never;
 
 describe('mock helpers', () => {
   test('createMockConvexClient tracks setAuth calls', () => {
@@ -54,5 +60,13 @@ describe('mock helpers', () => {
     const unsub = client.onUpdate({}, {}, () => {});
 
     expect(typeof unsub).toBe('function');
+  });
+});
+
+describe('Clerk compatibility (compile-time)', () => {
+  test('@resonant-projects/clerk-solidjs useAuth satisfies UseClerkAuth', () => {
+    // Fails `bun run typecheck` if Clerk's useAuth drifts from our contract.
+    const compatible: ClerkUseAuthIsCompatible = true;
+    expect(compatible).toBe(true);
   });
 });

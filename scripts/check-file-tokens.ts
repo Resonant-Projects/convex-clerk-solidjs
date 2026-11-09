@@ -69,20 +69,63 @@ const IGNORE_PATTERNS: string[] = [
   "*.snap",
 
   // --- Images ---
-  "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif", "*.bmp", "*.ico",
-  "*.svg", "*.tiff", "*.tif", "*.psd", "*.heic",
+  "*.png",
+  "*.jpg",
+  "*.jpeg",
+  "*.gif",
+  "*.webp",
+  "*.avif",
+  "*.bmp",
+  "*.ico",
+  "*.svg",
+  "*.tiff",
+  "*.tif",
+  "*.psd",
+  "*.heic",
 
   // --- Fonts ---
-  "*.woff", "*.woff2", "*.ttf", "*.otf", "*.eot",
+  "*.woff",
+  "*.woff2",
+  "*.ttf",
+  "*.otf",
+  "*.eot",
 
   // --- Archives / binaries / databases ---
-  "*.zip", "*.gz", "*.tgz", "*.tar", "*.bz2", "*.xz", "*.7z", "*.rar",
-  "*.db", "*.sqlite", "*.sqlite3", "*.lockb", "*.wasm", "*.bin", "*.exe",
-  "*.dll", "*.so", "*.dylib", "*.pdf", "*.jar", "*.class", "*.pyc",
+  "*.zip",
+  "*.gz",
+  "*.tgz",
+  "*.tar",
+  "*.bz2",
+  "*.xz",
+  "*.7z",
+  "*.rar",
+  "*.db",
+  "*.sqlite",
+  "*.sqlite3",
+  "*.lockb",
+  "*.wasm",
+  "*.bin",
+  "*.exe",
+  "*.dll",
+  "*.so",
+  "*.dylib",
+  "*.pdf",
+  "*.jar",
+  "*.class",
+  "*.pyc",
 
   // --- Video / audio ---
-  "*.mp4", "*.mov", "*.avi", "*.mkv", "*.webm", "*.mp3", "*.wav", "*.ogg",
-  "*.flac", "*.m4a", "*.aac",
+  "*.mp4",
+  "*.mov",
+  "*.avi",
+  "*.mkv",
+  "*.webm",
+  "*.mp3",
+  "*.wav",
+  "*.ogg",
+  "*.flac",
+  "*.m4a",
+  "*.aac",
 ];
 
 // ---------------------------------------------------------------------------
@@ -118,34 +161,52 @@ function globToRegExp(pattern: string): RegExp {
 const IGNORE_REGEXPS = IGNORE_PATTERNS.map(globToRegExp);
 
 function isIgnored(path: string): boolean {
-  return IGNORE_REGEXPS.some((re) => re.test(path));
+  return IGNORE_REGEXPS.some(re => re.test(path));
 }
 
 function git(args: string[]): Buffer {
   const result = Bun.spawnSync(["git", ...args], { stdin: "ignore" });
   if (result.exitCode !== 0) {
     process.stderr.write(result.stderr);
-    throw new Error(`git ${args.join(" ")} failed with status ${result.exitCode}`);
+    throw new Error(
+      `git ${args.join(" ")} failed with status ${result.exitCode}`,
+    );
   }
   return result.stdout;
 }
 
 /** Staged files (Added, Copied, Modified, Renamed) with their binary status. */
-function stagedFiles(): { path: string; binary: boolean; mode: string; objectId: string }[] {
+function stagedFiles(): {
+  path: string;
+  binary: boolean;
+  mode: string;
+  objectId: string;
+}[] {
   // Select only changed index entries. Disabling rename detection represents
   // renames as additions, which are still included by the required ACMR filter.
   const changed = git([
-    "diff", "--cached", "--name-only", "--no-renames", "--diff-filter=ACMR", "-z",
-  ]).toString("latin1").split("\0").filter(Boolean);
+    "diff",
+    "--cached",
+    "--name-only",
+    "--no-renames",
+    "--diff-filter=ACMR",
+    "-z",
+  ])
+    .toString("latin1")
+    .split("\0")
+    .filter(Boolean);
   if (changed.length === 0) return [];
   // Latin-1 is a lossless byte-to-string mapping for joining Git records. Only
   // decode paths as UTF-8 for display/globs; use index object IDs for lookups.
   const index = new Map<string, { mode: string; objectId: string }>();
-  for (const entry of git(["ls-files", "--stage", "-z"]).toString("latin1").split("\0")) {
+  for (const entry of git(["ls-files", "--stage", "-z"])
+    .toString("latin1")
+    .split("\0")) {
     if (!entry) continue;
     const tab = entry.indexOf("\t");
     const [mode, objectId, stage] = entry.slice(0, tab).split(" ");
-    if (stage === "0") index.set(entry.slice(tab + 1), { mode: mode!, objectId: objectId! });
+    if (stage === "0")
+      index.set(entry.slice(tab + 1), { mode: mode!, objectId: objectId! });
   }
   // Classify the candidate blobs against an empty tree: comparing with HEAD
   // marks binary-to-text replacements as binary because the OLD blob is binary.
@@ -155,7 +216,12 @@ function stagedFiles(): { path: string; binary: boolean; mode: string; objectId:
   const emptyTree = git(["mktree"]).toString().trim();
   const out = git([
     `--attr-source=${stagedTree}`,
-    "diff", "--numstat", "--no-renames", "-z", emptyTree, stagedTree,
+    "diff",
+    "--numstat",
+    "--no-renames",
+    "-z",
+    emptyTree,
+    stagedTree,
   ]);
   const binaries = new Set<string>();
   for (const entry of out.toString("latin1").split("\0")) {
@@ -167,9 +233,15 @@ function stagedFiles(): { path: string; binary: boolean; mode: string; objectId:
     if (firstTab === -1 || secondTab === -1) continue;
     const added = entry.slice(0, firstTab);
     const deleted = entry.slice(firstTab + 1, secondTab);
-    if (added === "-" && deleted === "-") binaries.add(entry.slice(secondTab + 1));
+    if (added === "-" && deleted === "-")
+      binaries.add(entry.slice(secondTab + 1));
   }
-  const files: { path: string; binary: boolean; mode: string; objectId: string }[] = [];
+  const files: {
+    path: string;
+    binary: boolean;
+    mode: string;
+    objectId: string;
+  }[] = [];
   for (const rawPath of changed) {
     const staged = index.get(rawPath);
     if (!staged) throw new Error("Staged file is missing from index stage 0");
@@ -182,7 +254,10 @@ function stagedFiles(): { path: string; binary: boolean; mode: string; objectId:
 /** Size of the staged blob, using its stage-0 object ID so arbitrary filename
  *  bytes and names like `0:notes.ts` never become Git revision arguments. */
 function stagedBlobSize(objectId: string): number {
-  return Number.parseInt(git(["cat-file", "-s", objectId]).toString().trim(), 10);
+  return Number.parseInt(
+    git(["cat-file", "-s", objectId]).toString().trim(),
+    10,
+  );
 }
 
 function estimateTokens(bytes: number): number {
@@ -210,7 +285,7 @@ function main(): number {
     `✖ Commit blocked: ${offenders.length} staged file(s) exceed ${fmt(MAX_TOKENS)} estimated tokens (${fmt(MAX_BYTES)} bytes; tokens ≈ bytes / ${BYTES_PER_TOKEN}).`,
     "",
     ...offenders.map(
-      (o) => `  ${o.path}  —  ~${fmt(o.tokens)} tokens (${fmt(o.bytes)} bytes)`,
+      o => `  ${o.path}  —  ~${fmt(o.tokens)} tokens (${fmt(o.bytes)} bytes)`,
     ),
     "",
     "Large files are expensive for humans and agents to read and edit. Split each file",

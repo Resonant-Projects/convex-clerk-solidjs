@@ -1,1 +1,1 @@
-export { useConvexAuth } from './provider';
+export { useConvexAuth } from './provider.js';

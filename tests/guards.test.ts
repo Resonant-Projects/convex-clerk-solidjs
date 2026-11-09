@@ -1,6 +1,6 @@
 import { test, expect, describe } from 'bun:test';
 // Import types directly from the types file to avoid triggering @solidjs/router import
-import type { AuthGuardConfig, FeatureChecker, AuthGuardResult } from '../src/guards/types';
+import type { AuthGuardConfig, FeatureChecker } from '../src/guards/types';
 
 describe('guards module structure', () => {
   test('guard hooks are defined in useAuthGuard module', async () => {
@@ -65,7 +65,7 @@ describe('AuthGuardConfig type', () => {
       requireFeatures: ['pro_chart'],
       featureChecker: () => ({ isLoading: false, hasAccess: true }),
       redirectTo: '/login',
-      onUnauthorized: (reason) => console.log(reason),
+      onUnauthorized: reason => console.log(reason),
     };
 
     expect(config.requireAuth).toBe(true);

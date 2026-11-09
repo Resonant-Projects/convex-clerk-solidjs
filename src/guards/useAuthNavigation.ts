@@ -1,5 +1,6 @@
 import { useNavigate } from '@solidjs/router';
-import { useAuth } from 'clerk-solidjs';
+import { useAuth } from '@resonant-projects/clerk-solidjs';
+import { toSafeRedirectPath } from './redirect.js';
 
 /**
  * Auth-aware navigation helpers.
@@ -25,12 +26,12 @@ export function useAuthNavigation() {
 
   /**
    * After authentication, redirect to the original requested path
-   * or fall back to a default path.
+   * or fall back to a default path. Only app-relative paths are followed;
+   * an absolute or protocol-relative `redirectTo` falls back to `fallbackPath`.
    */
   const redirectAfterAuth = (fallbackPath = '/dashboard') => {
     const urlParams = new URLSearchParams(window.location.search);
-    const redirectTo = urlParams.get('redirectTo') ?? fallbackPath;
-    navigate(redirectTo);
+    navigate(toSafeRedirectPath(urlParams.get('redirectTo'), fallbackPath));
   };
 
   return {

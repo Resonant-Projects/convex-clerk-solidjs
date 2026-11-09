@@ -6,15 +6,15 @@ import {
   onCleanup,
   useContext,
 } from 'solid-js';
-import type { Component, JSX, Accessor, Context } from 'solid-js';
+import type { Component, JSX, Context } from 'solid-js';
 import type { ConvexClient } from 'convex/browser';
 import type {
   AuthTokenFetcher,
   UseClerkAuth,
   ConvexAuthState,
   AuthStateSnapshot,
-} from './types';
-import { safeAuthAccess } from './utils';
+} from './types.js';
+import { safeAuthAccess } from './utils.js';
 
 // --- Contexts ---
 
@@ -52,9 +52,33 @@ export interface ConvexProviderWithClerkProps {
   children: JSX.Element;
 }
 
+/**
+ * Throw on a missing or malformed `client` / `useAuth` prop. A misconfigured
+ * provider must fail loudly at mount instead of rendering children with no
+ * working auth bridge.
+ */
+function assertValidProps(props: ConvexProviderWithClerkProps): void {
+  const client: unknown = props.client;
+  if (
+    !client ||
+    typeof (client as { setAuth?: unknown }).setAuth !== 'function'
+  ) {
+    throw new Error(
+      'ConvexProviderWithClerk: `client` must be a ConvexClient instance. Check that your Convex deployment URL (e.g. VITE_CONVEX_URL) is set.',
+    );
+  }
+  if (typeof props.useAuth !== 'function') {
+    throw new Error(
+      "ConvexProviderWithClerk: `useAuth` must be Clerk's useAuth hook from @resonant-projects/clerk-solidjs.",
+    );
+  }
+}
+
 export const ConvexProviderWithClerk: Component<
   ConvexProviderWithClerkProps
 > = props => {
+  assertValidProps(props);
+
   const [isConvexAuthenticated, setIsConvexAuthenticated] = createSignal<
     boolean | null
   >(null);
@@ -70,7 +94,9 @@ export const ConvexProviderWithClerk: Component<
         forceRefreshToken,
       }) => {
         try {
-          return auth.getToken({
+          // `await` so a rejected getToken() is caught here and fails closed
+          // (null token = unauthenticated) instead of escaping to Convex.
+          return await auth.getToken({
             template: 'convex',
             skipCache: forceRefreshToken,
           });
@@ -145,16 +171,22 @@ export const ConvexProviderWithClerk: Component<
     }
   });
 
-  const contextValue: Accessor<ConvexAuthState> = () => ({
-    isLoading: isConvexAuthenticated() === null,
-    isAuthenticated: isConvexAuthenticated() ?? false,
-  });
+  // Context values are read once by the Provider, so expose reactive getters:
+  // consumers then track the backend-confirmed auth state as it changes.
+  const contextValue: ConvexAuthState = {
+    get isLoading() {
+      return isConvexAuthenticated() === null;
+    },
+    get isAuthenticated() {
+      return isConvexAuthenticated() ?? false;
+    },
+  };
 
   const client = createMemo(() => props.client);
 
   return (
     <ConvexClientContext.Provider value={client() as ConvexClient}>
-      <ConvexAuthContext.Provider value={contextValue()}>
+      <ConvexAuthContext.Provider value={contextValue}>
         {props.children}
       </ConvexAuthContext.Provider>
     </ConvexClientContext.Provider>

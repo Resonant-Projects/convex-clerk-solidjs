@@ -16,7 +16,9 @@ describe('createQuery', () => {
   test('createQuery throws outside provider', () => {
     createRoot(dispose => {
       const { createQuery } = require('../src/query');
-      const mockRef = { _type: 'query' } as unknown as FunctionReference<'query'>;
+      const mockRef = {
+        _type: 'query',
+      } as unknown as FunctionReference<'query'>;
 
       expect(() => createQuery(mockRef)).toThrow();
       dispose();
@@ -26,7 +28,9 @@ describe('createQuery', () => {
   test('createQueryWithStatus throws outside provider', () => {
     createRoot(dispose => {
       const { createQueryWithStatus } = require('../src/query');
-      const mockRef = { _type: 'query' } as unknown as FunctionReference<'query'>;
+      const mockRef = {
+        _type: 'query',
+      } as unknown as FunctionReference<'query'>;
 
       expect(() => createQueryWithStatus(mockRef)).toThrow();
       dispose();

@@ -11,7 +11,9 @@ describe('createMutation', () => {
   test('createMutation throws outside provider', () => {
     createRoot(dispose => {
       const { createMutation } = require('../src/mutation');
-      const mockRef = { _type: 'mutation' } as unknown as FunctionReference<'mutation'>;
+      const mockRef = {
+        _type: 'mutation',
+      } as unknown as FunctionReference<'mutation'>;
 
       expect(() => createMutation(mockRef)).toThrow();
       dispose();

@@ -1,7 +1,11 @@
-import type { FunctionReference, FunctionArgs, FunctionReturnType } from 'convex/server';
+import type {
+  FunctionReference,
+  FunctionArgs,
+  FunctionReturnType,
+} from 'convex/server';
 import { from, createSignal, createMemo, onCleanup } from 'solid-js';
 import type { Accessor } from 'solid-js';
-import { useConvexClient } from './provider';
+import { useConvexClient } from './provider.js';
 
 /**
  * Result type for createQueryWithStatus — provides data, error, and loading states.
@@ -26,7 +30,10 @@ export function createQuery<Query extends FunctionReference<'query'>>(
   args?: FunctionArgs<Query> | (() => FunctionArgs<Query>),
 ): Accessor<FunctionReturnType<Query> | undefined> {
   const convex = useConvexClient();
-  const resolvedArgs = typeof args === 'function' ? (args as () => FunctionArgs<Query>)() : (args ?? {});
+  const resolvedArgs =
+    typeof args === 'function'
+      ? (args as () => FunctionArgs<Query>)()
+      : (args ?? {});
 
   return from<FunctionReturnType<Query>>(setter => {
     const unsubscribe = convex.onUpdate(query, resolvedArgs, setter);
@@ -48,9 +55,14 @@ export function createQueryWithStatus<Query extends FunctionReference<'query'>>(
   args?: FunctionArgs<Query> | (() => FunctionArgs<Query>),
 ): QueryStatus<FunctionReturnType<Query>> {
   const convex = useConvexClient();
-  const resolvedArgs = typeof args === 'function' ? (args as () => FunctionArgs<Query>)() : (args ?? {});
+  const resolvedArgs =
+    typeof args === 'function'
+      ? (args as () => FunctionArgs<Query>)()
+      : (args ?? {});
 
-  const [data, setData] = createSignal<FunctionReturnType<Query> | undefined>(undefined);
+  const [data, setData] = createSignal<FunctionReturnType<Query> | undefined>(
+    undefined,
+  );
   const [error, setError] = createSignal<Error | null>(null);
 
   let hasReceivedData = false;

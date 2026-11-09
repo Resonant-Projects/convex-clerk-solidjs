@@ -4,12 +4,12 @@ export {
   useRequireRole,
   useRequirePermission,
   useRequireFeature,
-} from './useAuthGuard';
-export { useAuthNavigation } from './useAuthNavigation';
+} from './useAuthGuard.js';
+export { useAuthNavigation } from './useAuthNavigation.js';
 export type {
   AuthGuardConfig,
   AuthGuardResult,
   AuthorizationStatus,
   FeatureChecker,
   FeatureCheckResult,
-} from './types';
+} from './types.js';
