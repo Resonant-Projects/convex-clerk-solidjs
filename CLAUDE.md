@@ -26,7 +26,7 @@ Default to using Bun instead of Node.js.
 
 ## Testing
 
-Use `bun test` to run tests.
+Use `bun test` to run tests. In this repo run them with `bun run test`, which adds `--conditions browser` so Solid's reactive build is used (a preload compiles Solid JSX). `bun run check` runs lint, format check, typecheck, tests, and build.
 
 ```ts#index.test.ts
 import { test, expect } from "bun:test";

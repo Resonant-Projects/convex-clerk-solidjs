@@ -1,5 +1,9 @@
-import type { FunctionReference, FunctionArgs, FunctionReturnType } from 'convex/server';
-import { useConvexClient } from './provider';
+import type {
+  FunctionReference,
+  FunctionArgs,
+  FunctionReturnType,
+} from 'convex/server';
+import { useConvexClient } from './provider.js';
 
 /**
  * Create an action caller bound to the current Convex client.
@@ -14,6 +18,8 @@ export function createAction<Action extends FunctionReference<'action'>>(
 
   return async (args?: FunctionArgs<Action>) => {
     const fullArgs = args ?? {};
-    return convex.action(action, fullArgs) as Promise<FunctionReturnType<Action>>;
+    return convex.action(action, fullArgs) as Promise<
+      FunctionReturnType<Action>
+    >;
   };
 }

@@ -1,11 +1,14 @@
-import type { ClerkAuth, ConvexAuthState, AuthTokenFetcher } from '../src/types';
+import type { ClerkAuth, AuthTokenFetcher } from '../src/types';
 
 /**
  * Creates a mock ConvexClient that tracks setAuth/mutation/action calls.
  */
 export function createMockConvexClient() {
   const calls: {
-    setAuth: Array<{ fetchToken: AuthTokenFetcher; onChange: (v: boolean) => void }>;
+    setAuth: Array<{
+      fetchToken: AuthTokenFetcher;
+      onChange: (v: boolean) => void;
+    }>;
     mutation: Array<{ ref: any; args: any }>;
     action: Array<{ ref: any; args: any }>;
     query: Array<{ ref: any; args: any }>;
@@ -37,7 +40,12 @@ export function createMockConvexClient() {
       calls.query.push({ ref, args });
       return Promise.resolve(undefined);
     },
-    onUpdate(ref: any, args: any, callback: (v: any) => void, _errorCallback?: (e: any) => void) {
+    onUpdate(
+      ref: any,
+      args: any,
+      callback: (v: any) => void,
+      _errorCallback?: (e: any) => void,
+    ) {
       calls.onUpdate.push({ ref, args, callback });
       return () => {}; // unsubscribe
     },
@@ -49,7 +57,9 @@ export function createMockConvexClient() {
 /**
  * Creates controllable mock Clerk auth signals.
  */
-export function createMockClerkAuth(overrides: Partial<ClerkAuth> = {}): ClerkAuth {
+export function createMockClerkAuth(
+  overrides: Partial<ClerkAuth> = {},
+): ClerkAuth {
   return {
     isLoaded: true,
     isSignedIn: false,

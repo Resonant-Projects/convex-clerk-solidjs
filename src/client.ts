@@ -1,1 +1,1 @@
-export { useConvexClient } from './provider';
+export { useConvexClient } from './provider.js';

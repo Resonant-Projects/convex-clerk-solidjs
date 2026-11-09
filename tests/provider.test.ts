@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'bun:test';
-import { createMockConvexClient, createMockClerkAuth, createMockUseAuth } from './helpers';
+import { createMockConvexClient, createMockClerkAuth } from './helpers';
 
 describe('ConvexProviderWithClerk', () => {
   test('provider module exports component and hooks', async () => {
@@ -28,8 +28,8 @@ describe('ConvexProviderWithClerk', () => {
   test('provider handles Accessor values via safeAuthAccess', async () => {
     const src = await Bun.file('./src/provider.tsx').text();
     expect(src).toContain('safeAuthAccess');
-    expect(src).toContain("safeAuthAccess(auth.isLoaded)");
-    expect(src).toContain("safeAuthAccess(auth.isSignedIn)");
+    expect(src).toContain('safeAuthAccess(auth.isLoaded)');
+    expect(src).toContain('safeAuthAccess(auth.isSignedIn)');
   });
 
   test('provider clears auth on unmount', async () => {
@@ -41,12 +41,16 @@ describe('ConvexProviderWithClerk', () => {
 
   test('useConvexClient throws meaningful error outside provider', async () => {
     const src = await Bun.file('./src/provider.tsx').text();
-    expect(src).toContain('useConvexClient must be used within <ConvexProviderWithClerk>');
+    expect(src).toContain(
+      'useConvexClient must be used within <ConvexProviderWithClerk>',
+    );
   });
 
   test('useConvexAuth throws meaningful error outside provider', async () => {
     const src = await Bun.file('./src/provider.tsx').text();
-    expect(src).toContain('useConvexAuth must be used within <ConvexProviderWithClerk>');
+    expect(src).toContain(
+      'useConvexAuth must be used within <ConvexProviderWithClerk>',
+    );
   });
 
   test('provider sets auth when signed in', async () => {
@@ -67,7 +71,10 @@ describe('ConvexProviderWithClerk', () => {
 describe('mock helpers work correctly', () => {
   test('createMockConvexClient tracks setAuth', () => {
     const { client, calls } = createMockConvexClient();
-    client.setAuth(async () => 'token', () => {});
+    client.setAuth(
+      async () => 'token',
+      () => {},
+    );
     expect(calls.setAuth).toHaveLength(1);
   });
 

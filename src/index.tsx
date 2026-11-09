@@ -1,18 +1,18 @@
 // Provider
-export { ConvexProviderWithClerk } from './provider';
-export type { ConvexProviderWithClerkProps } from './provider';
+export { ConvexProviderWithClerk } from './provider.js';
+export type { ConvexProviderWithClerkProps } from './provider.js';
 
 // Client access
-export { useConvexClient } from './client';
+export { useConvexClient } from './client.js';
 
 // Auth state
-export { useConvexAuth } from './auth';
+export { useConvexAuth } from './auth.js';
 
 // Reactive data hooks
-export { createQuery, createQueryWithStatus } from './query';
-export type { QueryStatus } from './query';
-export { createMutation } from './mutation';
-export { createAction } from './action';
+export { createQuery, createQueryWithStatus } from './query.js';
+export type { QueryStatus } from './query.js';
+export { createMutation } from './mutation.js';
+export { createAction } from './action.js';
 
 // Types
 export type {
@@ -21,7 +21,7 @@ export type {
   ClerkAuth,
   ConvexAuthState,
   IConvexClient,
-} from './types';
+} from './types.js';
 
 // Utilities
-export { safeAuthAccess, isFunction } from './utils';
+export { safeAuthAccess, isFunction } from './utils.js';

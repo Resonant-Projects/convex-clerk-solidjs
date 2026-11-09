@@ -1,0 +1,8 @@
+[install]
+# Supply-chain gate: never resolve a package version published less than
+# 24 hours ago (applies to direct and transitive dependencies).
+minimumReleaseAge = 86400 # seconds
+
+[test]
+# Compile Solid JSX for tests (see tests/setup/solid-jsx.ts).
+preload = ["./tests/setup/solid-jsx.ts"]

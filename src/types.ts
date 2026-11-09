@@ -31,8 +31,8 @@ export interface ClerkAuth {
     template?: string;
     skipCache?: boolean;
   }) => Promise<string | null>;
-  orgId?: string | null | Accessor<string | null>;
-  orgRole?: string | null | Accessor<string | null>;
+  orgId?: string | null | Accessor<string | null | undefined>;
+  orgRole?: string | null | Accessor<string | null | undefined>;
 }
 
 /**

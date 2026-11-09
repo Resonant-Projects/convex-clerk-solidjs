@@ -1,7 +1,7 @@
 import { createMemo, createEffect } from 'solid-js';
 import { useNavigate, useLocation } from '@solidjs/router';
-import { useAuth } from 'clerk-solidjs';
-import type { AuthGuardConfig, AuthGuardResult } from './types';
+import { useAuth } from '@resonant-projects/clerk-solidjs';
+import type { AuthGuardConfig, AuthGuardResult } from './types.js';
 
 /**
  * Configurable auth guard hook.
@@ -36,9 +36,7 @@ export function useAuthGuard(config: AuthGuardConfig = {}): AuthGuardResult {
 
     // Check roles via Clerk's has() method
     if (requireRoles.length > 0) {
-      const hasRequiredRole = requireRoles.some(role =>
-        (auth as any).has({ role }),
-      );
+      const hasRequiredRole = requireRoles.some(role => auth.has({ role }));
       if (!hasRequiredRole) {
         return {
           status: 'unauthorized' as const,
@@ -50,7 +48,7 @@ export function useAuthGuard(config: AuthGuardConfig = {}): AuthGuardResult {
     // Check permissions via Clerk's has() method
     if (requirePermissions.length > 0) {
       const hasRequiredPermission = requirePermissions.some(permission =>
-        (auth as any).has({ permission }),
+        auth.has({ permission }),
       );
       if (!hasRequiredPermission) {
         return {
@@ -100,10 +98,7 @@ export function useAuthGuard(config: AuthGuardConfig = {}): AuthGuardResult {
     if (status.status === 'unauthorized') {
       onUnauthorized?.(status.reason);
       if (redirectTo) {
-        if (
-          redirectTo === '/sign-in' ||
-          redirectTo.startsWith('/sign-in')
-        ) {
+        if (redirectTo === '/sign-in' || redirectTo.startsWith('/sign-in')) {
           const currentPath = location.pathname + location.search;
           const redirectUrl = redirectTo.includes('?')
             ? `${redirectTo}&redirectTo=${encodeURIComponent(currentPath)}`

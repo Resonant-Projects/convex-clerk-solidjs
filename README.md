@@ -14,7 +14,7 @@ bun add convex-clerk-solidjs
 ### Peer Dependencies
 
 ```bash
-bun add solid-js convex clerk-solidjs
+bun add solid-js convex @resonant-projects/clerk-solidjs
 ```
 
 For route guards, you also need `@solidjs/router` (optional):
@@ -25,16 +25,16 @@ bun add @solidjs/router
 
 | Package | Version |
 |---------|---------|
-| `solid-js` | >= 1.6.0 |
+| `solid-js` | ^1.9.8 |
 | `convex` | >= 1.25.0 |
-| `clerk-solidjs` | >= 2.0.0 |
-| `@solidjs/router` | >= 0.14.0 (optional, for guards) |
+| `@resonant-projects/clerk-solidjs` | ^4.3.6 |
+| `@solidjs/router` | >= 0.16 < 2 (optional, for guards) |
 
 ## Quick Start
 
 ```tsx
 import { ConvexClient } from "convex/browser";
-import { ClerkProvider, useAuth } from "clerk-solidjs";
+import { ClerkProvider, useAuth } from "@resonant-projects/clerk-solidjs";
 import { ConvexProviderWithClerk, createQuery } from "convex-clerk-solidjs";
 import { api } from "../convex/_generated/api";
 
@@ -77,21 +77,20 @@ The template name **must** be `convex` -- the provider requests tokens with `tem
 
 1. In your [Convex Dashboard](https://dashboard.convex.dev/), go to **Settings > Authentication**.
 2. Add Clerk as an auth provider.
-3. Create an `auth.config.ts` in your `convex/` directory:
+3. Set your Clerk Frontend API URL (Clerk Dashboard > **API Keys**) on the deployment: `bunx convex env set CLERK_JWT_ISSUER_DOMAIN https://your-clerk-domain.clerk.accounts.dev`
+4. Create an `auth.config.ts` in your `convex/` directory that fails loudly if the issuer is missing:
 
 ```ts
 // convex/auth.config.ts
-export default {
-  providers: [
-    {
-      domain: "https://your-clerk-domain.clerk.accounts.dev",
-      applicationID: "convex",
-    },
-  ],
-};
-```
+import type { AuthConfig } from "convex/server";
 
-Replace the `domain` with your Clerk Frontend API URL found in Clerk Dashboard > **API Keys**.
+const domain = process.env.CLERK_JWT_ISSUER_DOMAIN;
+if (!domain) throw new Error("CLERK_JWT_ISSUER_DOMAIN is not set");
+
+export default {
+  providers: [{ domain, applicationID: "convex" }],
+} satisfies AuthConfig;
+```
 
 ## Provider Setup
 
@@ -99,7 +98,7 @@ Replace the `domain` with your Clerk Frontend API URL found in Clerk Dashboard >
 
 ```tsx
 import { ConvexClient } from "convex/browser";
-import { ClerkProvider, useAuth } from "clerk-solidjs";
+import { ClerkProvider, useAuth } from "@resonant-projects/clerk-solidjs";
 import { ConvexProviderWithClerk } from "convex-clerk-solidjs";
 
 const convex = new ConvexClient(import.meta.env.VITE_CONVEX_URL);
@@ -129,6 +128,8 @@ The provider automatically:
 - Handles organization switching (orgId/orgRole changes)
 - Clears auth state on sign-out
 - Cleans up on unmount
+
+Misconfiguration fails loudly rather than rendering an unauthenticated app: the provider throws if `client` is not a Convex client or `useAuth` is not a function, `new ConvexClient()` throws on a missing or invalid URL, and Clerk's `ClerkProvider` throws on a missing or invalid publishable key. Runtime auth errors fail closed (`isAuthenticated` stays `false`).
 
 ## Data Hooks
 
@@ -461,7 +462,7 @@ function PostSignIn() {
 | Method | Signature | Description |
 |--------|-----------|-------------|
 | `navigateWithAuth` | `(path: string, requireAuth?: boolean) => void` | Navigates to `path`. If `requireAuth` is `true` and user is not signed in, redirects to `/sign-in?redirectTo=<path>` instead. |
-| `redirectAfterAuth` | `(fallbackPath?: string) => void` | Reads `redirectTo` from the URL query string and navigates there. Falls back to `fallbackPath` (default `"/dashboard"`). |
+| `redirectAfterAuth` | `(fallbackPath?: string) => void` | Reads `redirectTo` from the URL query string and navigates there if it is an app-relative path (absolute and `//` URLs are ignored). Falls back to `fallbackPath` (default `"/dashboard"`). |
 | `isAuthenticated` | `Accessor<boolean \| undefined>` | Clerk's `isSignedIn` signal. |
 
 ## API Reference
@@ -515,6 +516,8 @@ function PostSignIn() {
 
 ## Contributing
 
+`bun run check` runs lint and format check (Biome), typecheck (TypeScript 7), tests, and the build. Run tests with `bun run test`: it passes `--conditions browser` so Solid's reactive build is used.
+
 ### File size limit (pre-commit hook)
 
 A pre-commit hook blocks committing any file over **5,000 estimated tokens** (tokens ≈ bytes / 4, so **20,000 bytes**). Large files are expensive for humans and AI agents to read and edit; split them by responsibility instead (types, constants, helpers, and sub-functions into their own modules, re-exported from an index if needed).
@@ -531,7 +534,7 @@ A pre-commit hook blocks committing any file over **5,000 estimated tokens** (to
 
 This library builds on the work of several community projects:
 
-- [clerk-solidjs](https://github.com/nicknisi/clerk-solidjs) by spirit-led-software -- Clerk SDK for SolidJS
+- [@resonant-projects/clerk-solidjs](https://github.com/Resonant-Projects/clerk-solidjs) -- maintained Clerk SDK for SolidJS (hard fork of clerk-solidjs by spirit-led-software)
 - [convex-solidjs](https://github.com/nicknisi/convex-solidjs) by Frank-III -- Convex client bindings for SolidJS
 - [vedic-astro-made-easy](https://github.com/keithce/vedic-astro-made-easy) -- Production app that inspired this library
 
