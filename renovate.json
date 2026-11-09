@@ -7,6 +7,7 @@
   "osvVulnerabilityAlerts": true,
   "vulnerabilityAlerts": {
     "automerge": false,
+    "dependencyDashboardApproval": true,
     "labels": ["security"],
     "minimumReleaseAge": "3 days"
   },
