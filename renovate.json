@@ -1,6 +1,96 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
+  "extends": ["config:recommended"],
+  "timezone": "America/New_York",
+  "minimumReleaseAge": "3 days",
+  "internalChecksFilter": "strict",
+  "osvVulnerabilityAlerts": true,
+  "vulnerabilityAlerts": {
+    "automerge": false,
+    "dependencyDashboardApproval": true,
+    "labels": ["security"],
+    "minimumReleaseAge": "3 days"
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": false,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "Renovate's bun manager does not read locked versions from bun.lock, so the default update-lockfile strategy never proposes in-range updates. Bump devDependency ranges instead (consumers never install devDependencies).",
+      "matchDatasources": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "description": "Patch updates of stable (>=1.0.0) npm devDependencies: automerge only after the required Check status passes.",
+      "matchDatasources": ["npm"],
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "matchCurrentVersion": ">=1.0.0",
+      "minimumReleaseAge": "3 days",
+      "internalChecksFilter": "strict",
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "ignoreTests": false
+    },
+    {
+      "description": "Minor updates: one weekly PR for manual review.",
+      "matchUpdateTypes": ["minor"],
+      "groupName": "weekly minor updates",
+      "schedule": ["before 6am on monday"],
+      "automerge": false
+    },
+    {
+      "description": "Major updates: one weekly PR for manual review.",
+      "matchUpdateTypes": ["major"],
+      "groupName": "weekly major updates",
+      "schedule": ["before 6am on monday"],
+      "automerge": false
+    },
+    {
+      "description": "GitHub Actions run with the release workflow's secrets: one weekly PR for manual review, never automerged.",
+      "matchManagers": ["github-actions"],
+      "groupName": "weekly GitHub Actions updates",
+      "schedule": ["before 6am on monday"],
+      "automerge": false
+    },
+    {
+      "description": "Published peer ranges are review-only: never widened or narrowed without approval on the Dependency Dashboard, and never automerged.",
+      "matchDepTypes": ["peerDependencies"],
+      "rangeStrategy": "widen",
+      "groupName": "peer dependency ranges",
+      "labels": ["peer-dependencies"],
+      "schedule": ["before 6am on monday"],
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Minor and major updates of packages that are also peers join the review-only peer group, so the dev version and the peer range are reviewed together. Keep this list in sync with package.json peerDependencies.",
+      "matchPackageNames": [
+        "@resonant-projects/clerk-solidjs",
+        "solid-js",
+        "@solidjs/router",
+        "convex"
+      ],
+      "matchUpdateTypes": ["minor", "major"],
+      "groupName": "peer dependency ranges",
+      "labels": ["peer-dependencies"],
+      "schedule": ["before 6am on monday"],
+      "dependencyDashboardApproval": true,
+      "automerge": false
+    },
+    {
+      "description": "Toolchain pins (packageManager, engines) are reviewed manually.",
+      "matchDepTypes": ["packageManager", "engines"],
+      "automerge": false
+    },
+    {
+      "description": "Never automerge 0.x versions.",
+      "matchCurrentVersion": "<1.0.0",
+      "automerge": false
+    }
   ]
 }
