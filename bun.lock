@@ -8,7 +8,7 @@
         "@babel/core": "^7.29.13",
         "@babel/preset-typescript": "^7.29.7",
         "@biomejs/biome": "^2.6.6",
-        "@resonant-projects/clerk-solidjs": "^4.3.6",
+        "@resonant-projects/clerk-solidjs": "^4.3.7",
         "@solidjs/router": "^1.0.1",
         "@solidjs/testing-library": "^0.8.10",
         "@types/bun": "^1.4.4",
@@ -178,7 +178,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
-    "@resonant-projects/clerk-solidjs": ["@resonant-projects/clerk-solidjs@4.3.6", "", { "dependencies": { "@clerk/backend": "^3.26.6", "@clerk/shared": "^4.44.0", "@solid-primitives/jsx-tokenizer": "^1.1.4", "@tanstack/query-core": "^5.105.0", "csstype": "^3.2.3" }, "peerDependencies": { "@solidjs/router": ">=0.16 <2", "@solidjs/start": "^2", "solid-js": "^1.9.8" }, "optionalPeers": ["@solidjs/router", "@solidjs/start"] }, "sha512-Ui/H36LXBB+RgUkQuTbUejTH4OtNN2k4Lx7VbjlriOvfNPUD2LS2LHuJl2QM4TstsEkm8ul8g7j8r+ECJKlNPA=="],
+    "@resonant-projects/clerk-solidjs": ["@resonant-projects/clerk-solidjs@4.3.7", "", { "dependencies": { "@clerk/backend": "^3.27.0", "@clerk/shared": "^4.44.1", "@solid-primitives/jsx-tokenizer": "^1.1.4", "@tanstack/query-core": "^5.105.0", "csstype": "^3.2.3" }, "peerDependencies": { "@solidjs/router": ">=0.16 <2", "@solidjs/start": "^2", "solid-js": "^1.9.8" }, "optionalPeers": ["@solidjs/router", "@solidjs/start"] }, "sha512-OAv2/cpgqOCaAQhdc7Eyqn4P2qZp74iRD/eoU+DDSBcz/lIi1+/44sdjI/U+OvxCGrxe0LWyJ7Vi0qUhq+bu+Q=="],
 
     "@rollup/rollup-android-arm-eabi": ["@rollup/rollup-android-arm-eabi@4.68.0", "", { "os": "android", "cpu": "arm" }, "sha512-Ta2n0ntLfzP0LqwwcXOIh2z0mnHjlxMS+h4Y9lo+w33Quyf9KFKEi9QZ2IKqeEBKr0qxNpXc/DQjz5KVIs8AEA=="],
 
