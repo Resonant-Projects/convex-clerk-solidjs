@@ -65,7 +65,7 @@
     "@babel/preset-typescript": "^7.29.7",
     "@biomejs/biome": "^2.6.8",
     "@resonant-projects/clerk-solidjs": "^4.3.7",
-    "@solidjs/router": "^1.0.1",
+    "@solidjs/router": "^1.0.3",
     "@solidjs/testing-library": "^0.8.10",
     "@types/bun": "^1.4.4",
     "babel-preset-solid": "^1.9.16",
