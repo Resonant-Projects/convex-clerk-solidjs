@@ -71,7 +71,7 @@
     "babel-preset-solid": "^1.9.19",
     "convex": "^1.49.0",
     "simple-git-hooks": "^2.14.0",
-    "solid-js": "^1.9.18",
+    "solid-js": "^1.9.19",
     "tsup": "^9.0.0",
     "tsup-preset-solid": "^2.2.0",
     "typescript": "^7.0.2"
