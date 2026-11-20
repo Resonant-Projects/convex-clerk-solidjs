@@ -8,7 +8,7 @@
         "@babel/core": "^7.29.13",
         "@babel/preset-typescript": "^7.29.7",
         "@biomejs/biome": "^2.6.8",
-        "@resonant-projects/clerk-solidjs": "^4.3.7",
+        "@resonant-projects/clerk-solidjs": "^4.3.8",
         "@solidjs/router": "^1.0.3",
         "@solidjs/testing-library": "^0.8.10",
         "@types/bun": "^1.4.4",
@@ -112,9 +112,9 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.6.8", "", { "os": "win32", "cpu": "x64" }, "sha512-cD6HvGczZUiAYsY8s2TxxXj2AHFzEdMomvVJfEjzOjBM45nGqIDfBpbtvwGQzDCN8X2yKKk9u1jnDZisT2nxIg=="],
 
-    "@clerk/backend": ["@clerk/backend@3.27.0", "", { "dependencies": { "@clerk/shared": "^4.44.1", "standardwebhooks": "^1.0.0" } }, "sha512-pmhVVP9EsAOL1rlRU4xR0XSL1BJczxGAJIqv8c+C9fRz7TYzCndGUMSSE/Zg7i2QOA24ExJbEJUiOjILdUL2EQ=="],
+    "@clerk/backend": ["@clerk/backend@3.30.0", "", { "dependencies": { "@clerk/shared": "^4.46.0", "standardwebhooks": "^1.0.0" } }, "sha512-3VeYOs0awboLZ3oK0zp3hY9xFVQYd4Yt4FrYmP5jun1Im36v7cyteZgDd1bG2YfYWM1ETKkRymxU2v1rQNMwnA=="],
 
-    "@clerk/shared": ["@clerk/shared@4.44.1", "", { "dependencies": { "@tanstack/query-core": "^5.101.4", "dequal": "2.0.3", "glob-to-regexp": "0.4.1", "js-cookie": "3.0.8" }, "peerDependencies": { "react": "^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0", "react-dom": "^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0" }, "optionalPeers": ["react", "react-dom"] }, "sha512-c06U6GtlLJNOKj900rHDSqjVRz0/0zb3RZXVGKUqTulfQxr4Ym543JE6cbOnZVJZCbm0fGPhdRKvHq6fO/SvVw=="],
+    "@clerk/shared": ["@clerk/shared@4.46.0", "", { "dependencies": { "@tanstack/query-core": "^5.101.4", "dequal": "2.0.3", "glob-to-regexp": "0.4.1", "js-cookie": "3.0.8" }, "peerDependencies": { "react": "^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0", "react-dom": "^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0" }, "optionalPeers": ["react", "react-dom"] }, "sha512-eb60E6xjOzcBu1B1C3Y1XucVwbo5PtkQI/gbSHEwqDwjsC9G++ePzuyzyINGkGt65ia3w6qMN1iRcdd1w/jzlQ=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.27.0", "", { "os": "aix", "cpu": "ppc64" }, "sha512-KuZrd2hRjz01y5JK9mEBSD3Vj3mbCvemhT466rSuJYeE/hjuBrHfjjcjMdTm/sz7au+++sdbJZJmuBwQLuw68A=="],
 
@@ -178,7 +178,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
-    "@resonant-projects/clerk-solidjs": ["@resonant-projects/clerk-solidjs@4.3.7", "", { "dependencies": { "@clerk/backend": "^3.27.0", "@clerk/shared": "^4.44.1", "@solid-primitives/jsx-tokenizer": "^1.1.4", "@tanstack/query-core": "^5.105.0", "csstype": "^3.2.3" }, "peerDependencies": { "@solidjs/router": ">=0.16 <2", "@solidjs/start": "^2", "solid-js": "^1.9.8" }, "optionalPeers": ["@solidjs/router", "@solidjs/start"] }, "sha512-OAv2/cpgqOCaAQhdc7Eyqn4P2qZp74iRD/eoU+DDSBcz/lIi1+/44sdjI/U+OvxCGrxe0LWyJ7Vi0qUhq+bu+Q=="],
+    "@resonant-projects/clerk-solidjs": ["@resonant-projects/clerk-solidjs@4.4.0", "", { "dependencies": { "@clerk/backend": "^3.29.0", "@clerk/shared": "^4.45.1", "@solid-primitives/jsx-tokenizer": "^1.1.4", "@tanstack/query-core": "^5.105.0", "csstype": "^3.2.3" }, "peerDependencies": { "@solidjs/router": ">=0.16 <2", "@solidjs/start": "^2", "solid-js": "^1.9.8" }, "optionalPeers": ["@solidjs/router", "@solidjs/start"] }, "sha512-pvXyJOrTbqwIBq8XO7GcvAPOXcemS9g/JVsKYOzl3rm1otwgWcYIwepMRQIJYTsxJJC0upF74fd/22g1ygtuEQ=="],
 
     "@rollup/rollup-android-arm-eabi": ["@rollup/rollup-android-arm-eabi@4.68.0", "", { "os": "android", "cpu": "arm" }, "sha512-Ta2n0ntLfzP0LqwwcXOIh2z0mnHjlxMS+h4Y9lo+w33Quyf9KFKEi9QZ2IKqeEBKr0qxNpXc/DQjz5KVIs8AEA=="],
 
