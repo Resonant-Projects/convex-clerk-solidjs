@@ -44,7 +44,7 @@
     "reactive"
   ],
   "license": "MIT",
-  "packageManager": "bun@1.4.4",
+  "packageManager": "bun@1.4.5",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Resonant-Projects/convex-clerk-solidjs.git"
@@ -67,7 +67,7 @@
     "@resonant-projects/clerk-solidjs": "^4.3.8",
     "@solidjs/router": "^1.0.3",
     "@solidjs/testing-library": "^0.8.10",
-    "@types/bun": "^1.4.4",
+    "@types/bun": "^1.4.5",
     "babel-preset-solid": "^1.9.19",
     "convex": "^1.49.0",
     "simple-git-hooks": "^2.14.0",
