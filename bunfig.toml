@@ -2,6 +2,9 @@
 # Supply-chain gate: never resolve a package version published less than
 # 24 hours ago (applies to direct and transitive dependencies).
 minimumReleaseAge = 86400 # seconds
+# First-party packages publish straight to npmjs.org; exempt them so a fresh
+# release can be adopted at once (the package proxy exempts them too).
+minimumReleaseAgeExcludes = ["@resonant-projects/clerk-solidjs"]
 
 [test]
 # Compile Solid JSX for tests (see tests/setup/solid-jsx.ts).
